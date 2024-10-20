@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ONLINE TV by Bayazid Sarour</title>
+
+    <style>
+      body {
+        text-align: center;
+        margin: 20px;
+      }
+      video {
+        width: 100%;
+        max-width: 800px;
+        margin-bottom: 20px;
+        position: sticky;
+        top: 20px;
+        
+      }
+      #channelListWrapper {
+        display: flex;
+        justify-content: center; /* Center the channel list horizontally */
+        margin-top: 20px;
+      }
+      #channelList {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Two columns */
+        gap: 10px; /* Space between the channels */
+        max-width: 800px;
+        width: 100%;
+      }
+      .channel {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 50px; /* Round shape */
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+      }
+      .channel:hover {
+        /* background-color: rgb(156, 22, 22); */
+        background-image: linear-gradient(10deg, rgb(131, 5, 49) , rgb(201, 22, 73) );
+      }
+      
+      #controls {
+        margin-top: 20px;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+       
+        
+
+      }
+      
+      button:hover {
+        background-color: #109972;
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </style>
+  </head>
+  <body>
+    <h1 style="font-family: arial; color: #25aa7e">BSK ONLINE TV</h1>
+
+
+    
+
+
+
+
+
+
+    <!-- Video Player -->
+    <video id="video" controls></video>
+
+    <!-- Next/Previous Buttons -->
+    <div id="controls">
+      <button style="background-color: #bc285c" id="prevChannel">
+        Previous
+      </button>
+      <button style="background-color: rgb(30, 164, 164)" id="nextChannel">
+        Next
+      </button>
+    </div>
+
+    <!-- Wrapper for channel list to center it -->
+    <div id="channelListWrapper">
+      <!-- Channel List -->
+      <div id="channelList"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+      const video = document.getElementById("video");
+      const channelList = document.getElementById("channelList");
+      const prevChannelButton = document.getElementById("prevChannel");
+      const nextChannelButton = document.getElementById("nextChannel");
+
+      // Predefined list of channels with your new channels added
+      const channels = [
+      {
+          name: "Animal Planet HD",
+          url: "https://denver1769.pages.dev/Discovery/animal_planet_hd_hindi.m3u8",
+        },
+        
+        {
+          name: "bein sports",
+          url: "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/bein-sports-xtra-en-espanol/playlist.m3u8",
+        },
+        {
+          name: " T sports Hd 1",
+          url: " https://starshare.org:443/live/Shuvo480/2309/113069.m3u8",
+        },
+        {
+          name: " T sports sd 2 ",
+          url: " https://starshare.org:443/live/Shuvo480/2309/130714.m3u8",
+        },
+        
+        {
+          name: " STAR SPORT 1 HD ",
+          url: "https://starshare.org:443/live/Shuvo480/2309/148.m3u8 ",
+        },
+        {
+          name: " STAR SPORTS HINDI HD ",
+          url: "https://starshare.org:443/live/Shuvo480/2309/211.m3u8 ",
+        },
+
+        {
+          name: " STAR SPORTS 2 HD ",
+          url: " https://starshare.org:443/live/Shuvo480/2309/239.m3u8 ",
+        },
+        {
+          name: " SONY 5 HD ",
+          url: " https://starshare.org:443/live/Shuvo480/2309/176.m3u8 ",
+        },
+        {
+          name: " SONY Ten 2 HD ",
+          url: " https://starshare.org:443/live/Shuvo480/2309/31314.m3u8 ",
+        },
+        {
+          name: " SONY TEN 1 HD ",
+          url: " https://starshare.org:443/live/Shuvo480/2309/154.m3u8",
+        },
+        {
+          name: " SONY TEN 3 HD ",
+          url: " https://starshare.org:443/live/Shuvo480/2309/146.m3u8 ",
+        },
+
+        {
+          name: " Real Madrid TV ",
+          url: " https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01201-cinedigmenterta-realmadrid-cineverse/playlist.m3u8 ",
+        },
+
+        {
+          name: " MU TV ",
+          url: " https://bcovlive-a.akamaihd.net/r2d2c4ca5bf57456fb1d16255c1a535c8/eu-west-1/eu-west-1/6058004203001/profile_2/chunklist.m3u8 ",
+        },
+        {
+          name: " RONGEEN TV cartoon ",
+          url: " https://server.thelegitpro.in/rongeentv/rongeentv/tracks-v1a1/mono.m3u8",
+        },
+
+        {
+          name: " Nick+ FHD ",
+          url: " https://starshare.org:443/live/Shuvo480/2309/7438.m3u8 ",
+        },
+        {
+          name: " Discovery Kids ",
+          url: " https://allinonereborn.github.io/allinone_live_tv/live/discovery/api/Discovery_Kids.m3u8",
+        },
+        {
+          name: " Kids Creation ",
+          url: " https://vods1.aynaott.com/kidscreation_test/tracks-v1a1/mono.m3u8",
+        },
+        {
+          name: " Gubbare",
+          url: " https://epiconvh.s.llnwi.net/gubbare/master_720.m3u8",
+        },
+        {
+          name: " Zoo Moo ",
+          url: " https://amg01553-blueantmediaasi-zoomoonz-samsungnz-rdufn.amagi.tv/playlist/amg01553-blueantmediaasi-zoomoonz-samsungnz/playlist.m3u8",
+        },
+
+        {
+          name: " SANGEET BANGLA ",
+          url: "https://d75dqofg5kmfk.cloudfront.net/bpk-tv/Sangeetbangla/default/index.m3u8 ",
+        },
+        {
+          name: " mastiii ",
+          url: " https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/mastiii/f8e6c0d9-5e45-4cb5-837d-4c66b4a3813a/1.m3u8 ",
+        },
+        {
+          name: " 9xm ",
+          url: " https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/9xm/c8939874-787e-41ae-8d35-f5ea6e15720d/0.m3u8 ",
+        },
+        {
+          name: " 9X Music",
+          url: " https://d2q8p4pe5spbak.cloudfront.net/bpk-tv/9XM/9XM.isml/index.m3u8 ",
+        },
+        {
+          name: " 9x TASHAN ",
+          url: " https://d1g8wgjurz8via.cloudfront.net/bpk-tv/9Xtashan/default/9Xtashan.m3u8 ",
+        },
+        {
+          name: " yrf music ",
+          url: " https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/yrf-music/74b215e9-e03d-45de-854f-0c5f3030e8a2/4.m3u8 ",
+        },
+        {
+          name: " B4U MUSIC ",
+          url: " https://cdn2.pishow.tv/live/141/master.m3u8 ",
+        },
+        {
+          name: " Music India ",
+          url: " https://cdn2.pishow.tv/live/135/master.m3u8 ",
+        },
+        
+        {
+          name: " Zoom  ",
+          url: "https://pubads.g.doubleclick.net/ssai/event/JCAm25qkRXiKcK1AJMlvKQ/master.m3u8",
+        },
+        {
+          name: " STAR GOLD SELECT HD ",
+          url: "https://starshare.org:443/live/Shuvo480/2309/210.m3u8 ",
+        },
+        {
+          name: " SONY MAX HD ",
+          url: " https://starshare.org:443/live/Shuvo480/2309/151.m3u8 ",
+        },
+        {
+          name: " Action Hollywood Movies",
+          url: " https://cdn-apse1-prod.tsv2.amagi.tv/linear/amg01076-lightningintern-actionhollywood-samsungnz/playlist.m3u8 ",
+        },
+        {
+          name: " Deepto TV  ",
+          url: " https://byphdgllyk.gpcdn.net/hls/deeptotv/index.m3u8",
+        },
+        {
+          name: " asiantv ",
+          url: "https://mtlivestream.com/asian/ytlive/index.m3u8 ",
+        },
+        {
+          name: " ETV BANGLA ",
+          url: " http://210.4.72.204/hls-live/livepkgr/_definst_/liveevent/livestream3.m3u8 ",
+        },
+        {
+          name: " AlJazeera English ",
+          url: "https://d1cy85syyhvqz5.cloudfront.net/v1/master/7b67fbda7ab859400a821e9aa0deda20ab7ca3d2/aljazeeraLive/AJE/index.m3u8 ",
+        },
+        {
+          name: " BBC News ",
+          url: "https://d2vnbkvjbims7j.cloudfront.net/containerA/LTN/playlist.m3u8 ",
+        },
+        {
+          name: " ABP Ananda ",
+          url: "https://abplivetv.akamaized.net/hls/live/2043012/ananda/master_720p.m3u8 ",
+        },
+        {
+          name: " Enter 10 Bangla ",
+          url: "https://live-bangla.akamaized.net/liveabr/pub-iobanglakp3sff/live_720p/chunks.m3u8 ",
+        },
+        {
+          name: " Sony Kal",
+          url: "https://spt-sonykal-1-us.lg.wurl.tv/playlist.m3u8 ",
+        },
+        {
+          name: " The Movie Club",
+          url: "https://cc-jytb1qhmgqh5a.akamaized.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-jytb1qhmgqh5a/playlist.m3u8 ",
+        },
+        {
+          name: " South Station",
+          url: "https://cc-tke03xaj1wszc.akamaized.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-tke03xaj1wszc/South_Station_IN/playlist.m3u8 ",
+        },
+        {
+          name: " Sheemaroo Bollywood",
+          url: "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg00864-shemarooenterta-shemabollywood-ono/playlist.m3u8 ",
+        }, 
+        
+        {
+          name: " Joo Music",
+          url: "https://livecdn.live247stream.com/joomusic/tv/playlist.m3u8 ",
+        },
+         
+        {
+          name: " ATN Abganisthan",
+          url: "https://d10rltuy0iweup.cloudfront.net/ATNNAT/myStream/playlist.m3u8 ",
+        },
+        
+         
+        {
+          name: " Discovery HD Multi Audio",
+          url: "https://raw.githubusercontent.com/subirkumarpaul/My-iptv/main/Discovery.m3u8 ",
+        },
+        
+         
+        {
+          name: " Discovery Science Multi Audio",
+          url: "https://raw.githubusercontent.com/subirkumarpaul/My-iptv/main/Discovery-Science.m3u8",
+        },
+        
+         
+        {
+          name: " TLC HD",
+          url: "https://raw.githubusercontent.com/subirkumarpaul/My-iptv/main/Tlc.m3u8",
+        },
+        
+         
+        {
+          name: " Wild Earth",
+          url: "https://wildearth-roku.amagi.tv/masterR720P.m3u8 ",
+        },
+        
+         
+        {
+          name: " Travel XP English NZ",
+          url: "https://travelxp-travelxp-1-nz.samsung.wurl.tv/playlist.m3u8 ",
+        },
+         
+        {
+          name: " Food Network",
+          url: "https://raw.githubusercontent.com/subirkumarpaul/My-iptv/main/Food-Network.m3u8 ",
+        },
+         
+        {
+          name: " Action Hollywood Movies",
+          url: "https://amg01076-lightningintern-actionhollywood-samsungnz-82rry.amagi.tv/playlist/amg01076-lightningintern-actionhollywood-samsungnz/playlist.m3u8 ",
+        },
+         
+        {
+          name: "Show Box",
+          url: "https://epiconvh.s.llnwi.net/showbox/master_1080.m3u8 ",
+        },
+         
+        {
+          name: " Fox News Now",
+          url: "https://fox-foxnewsnow-samsungus.amagi.tv/playlist.m3u8 ",
+        },
+         
+        {
+          name: " Peace TV Bangla",
+          url: "https://dzkyvlfyge.erbvr.com/PeaceTvBangla/tracks-v3a1/mono.m3u8?sid=qRApYCh4AUmcio2ge9BktA ",
+        },
+         
+        {
+          name: " Peace TV English",
+          url: "https://dzkyvlfyge.erbvr.com/PeaceTvEnglish/index.m3u8 ",
+        },
+          
+        {
+          name: " News18 Bangla News",
+          url: "https://amg01448-samsungin-news18bangla-samsungin-ad-qy.amagi.tv/playlist/amg01448-samsungin-news18bangla-samsungin/playlist.m3u8",
+        },
+          
+        {
+          name: " R Bangla",
+          url: "https://amg01218-republictvfast-amg01218c1-samsung-in-1918.playouts.now.amagi.tv/playlist/amg01218-republictvfast-rbangla-samsungin/playlist.m3u8",
+        },
+          
+        {
+          name: " BOLLYWOOD PRIME",
+          url: "https://d35j504z0x2vu2.cloudfront.net:443/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-prime/../../../manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-prime/3850b620-3d48-4f69-a540-27e9f3262077/3.m3u8",
+        },
+          
+        {
+          name: " Bollywood HD",
+          url: "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-hd/manifest.m3u8 ",
+        },
+          
+        {
+          name: " Bollywood Classic HD",
+          url: "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/bollywood-classic/manifest.m3u8 ",
+        },
+          
+        {
+          name: " 4K Travel",
+          url: "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/4k-travel-tv/manifest.m3u8 ",
+        },
+          
+        {
+          name: " Jungle Book",
+          url: "https://cc-4bhi5osabejc9.akamaized.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-4bhi5osabejc9/junglebook.m3u8 ",
+        },
+          
+        {
+          name: " 9X Jalwa",
+          url: "https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/9x-jalwa/47bdb49d-f6f3-4927-a9ea-12c4c5afc732/0.m3u8 ",
+        },
+          
+        {
+          name: " E 24",
+          url: "https://live-e24.dailyhunt.in/eternowsa/live/amlst:E24_,b256,b512,b1024,b1824,.smil/playlist.m3u8 ",
+        },
+        
+          
+        {
+          name: " CNN",
+          url: "https://amg01448-samsungin-cnnnow-samsungin-4npqg.amagi.tv/playlist/amg01448-samsungin-cnnnow-samsungin/playlist.m3u8 ",
+        },
+        
+          
+        {
+          name: " DW Naws",
+          url: "https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8 ",
+        },
+        
+          
+        {
+          name: " RT Now",
+          url: "https://rt-glb.rttv.com/live/rtnews/playlist.m3u8 ",
+        },
+        
+          
+        {
+          name: " Deptto TV",
+          url: "https://byphdgllyk.gpcdn.net/hls/DeeptoTV/index.m3u8?v=1 ",
+        },
+        
+          
+        {
+          name: " O Sports",
+          url: "https://f77zvuxbr89.a.trbcdn.net/reserv9/index.m3u8 ",
+        },
+        
+          
+        {
+          name: " SETANTA 1 laliga",
+          url: "https://25axin5tbn8.a.trbcdn.net/Setanta1_La_Liga/index.m3u8 ",
+        },
+        
+          
+        {
+          name: " Laliga-DAZN 4",
+          url: "https://zjdmi53knyt.a.trbcdn.net/dazn4/index.m3u8 ",
+        },
+        
+          
+        {
+          name: " Islam Bangla",
+          url: "https://pull-cdnw.anystream.uk/live/cf46c8b0018c10009acded4c00000000/playlist.m3u8 ",
+        },
+        
+          
+        {
+          name: " Animal Planet Multi Audio",
+          url: "https://raw.githubusercontent.com/subirkumarpaul/My-iptv/main/Animal-Planet.m3u8 ",
+        },
+           
+        {
+          name: " Iran International News tv",
+          url: "https://dev-live.livetvstream.co.uk/LS-63503-4/chunklist_b1196000.m3u8 ",
+        },
+           
+        {
+          name: " Aljazeera HD Backup 🛜",
+          url: "https://live-hls-web-aje.getaj.net/AJE/04.m3u8 ",
+        },
+           
+        
+        
+        
+
+
+
+      ];
+
+      let currentChannelIndex = 0; // Track the current channel index
+
+      // Function to display the list of channels
+      function displayChannelList() {
+        channelList.innerHTML = ""; // Clear the current list
+
+        channels.forEach((channel, index) => {
+          const channelElement = document.createElement("div");
+          channelElement.className = "channel";
+          channelElement.textContent = channel.name;
+          channelElement.addEventListener("click", () => {
+            playStream(index); // Play the selected channel
+          });
+
+          channelList.appendChild(channelElement);
+        });
+      }
+
+      // Function to play the selected stream by index
+      function playStream(channelIndex) {
+        currentChannelIndex = channelIndex;
+        const selectedChannel = channels[currentChannelIndex];
+        const streamUrl = selectedChannel.url;
+
+        if (Hls.isSupported()) {
+          const hls = new Hls();
+          hls.loadSource(streamUrl);
+          hls.attachMedia(video);
+          hls.on(Hls.Events.MANIFEST_PARSED, function () {
+            video.play();
+          });
+
+          hls.on(Hls.Events.ERROR, function (event, data) {
+            console.error("HLS.js error:", data);
+          });
+        } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+          video.src = streamUrl;
+          video.addEventListener("loadedmetadata", function () {
+            video.play();
+          });
+        } else {
+          console.log("HLS not supported in this browser.");
+        }
+      }
+
+      // Event listeners for next/previous buttons
+      nextChannelButton.addEventListener("click", function () {
+        if (currentChannelIndex < channels.length - 1) {
+          playStream(currentChannelIndex + 1); // Play the next channel
+        }
+      });
+
+      prevChannelButton.addEventListener("click", function () {
+        if (currentChannelIndex > 0) {
+          playStream(currentChannelIndex - 1); // Play the previous channel
+        }
+      });
+
+      // Display the list of channels on page load
+      displayChannelList();
+
+      // Automatically play the first channel on load
+      playStream(0);
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+    </script>
+  </body>
+</html>
